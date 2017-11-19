@@ -16,34 +16,36 @@ import mu.KLogging
 //@SpringBootApplication
 class KotlinJavafxSampleApplication : Application() {
 
+    val firstNameLabel = Label().apply {
+        id = "firstNameLabel"
+        text = "First Name"
+    }
+
+    val firstNameTextField = TextField().apply {
+        //id = "firstNameTextField"
+    }
+
+    val lastNameLabel = Label().apply {
+        //id = "lastNameLabel"
+        text = "Last Name"
+    }
+
+    val lastNameTextField = TextField().apply {
+        //id = "lastNameTextField"
+    }
+
+    val cancelButton = Button().apply {
+        text = "Cancel"
+    }
+
+    val okButton = Button().apply {
+        id = "okButton"
+        text = "Ok"
+    }
+
+
     override fun start(primaryStage: Stage?) {
 
-        val firstNameLabel = Label().apply {
-            //id = "firstNameLabel"
-            text = "First Name"
-        }
-
-
-        val firstNameTextField = TextField().apply {
-            //id = "firstNameTextField"
-        }
-
-        val lastNameLabel = Label().apply {
-            //id = "lastNameLabel"
-            text = "Last Name"
-        }
-
-        val lastNameTextField = TextField().apply {
-            //id = "lastNameTextField"
-        }
-
-        val cancelButton = Button().apply {
-            text = "Cancel"
-        }
-        val okButton = Button().apply {
-            id = "okButton"
-            text = "Ok"
-        }
 
         logger.info { ">$firstNameLabel   <$firstNameTextField" }
 
@@ -57,24 +59,19 @@ class KotlinJavafxSampleApplication : Application() {
             add(okButton, 1, 2)
         }
 
-        val gridPaneBuilder = GridPaneBuilder(arrayOf(firstNameLabel),
-                "",
-                "");
 
+        val gridPane1 = VisualGridPaneBuilder(this,
+                """>$firstNameLabel   <$firstNameTextField
+                         >$lastNameLabel    <$lastNameTextField
+                         >$okButton,$cancelButton                """
+        ).build()
 
-        //createGridPane(firstNameLabel, firstNameTextField)
 
         val scene = Scene(gridPane, 800.0, 600.0)
         primaryStage?.setScene(scene)
         primaryStage?.show()
     }
 
-    fun createGridPane(vararg args: Node): GridPane {
-        val gridPane = GridPane()
-        val parameters = KotlinJavafxSampleApplication::createGridPane.parameters
-        logger.info { parameters }
-        return gridPane
-    }
 
     companion object : KLogging() {
         @JvmStatic
