@@ -66,6 +66,7 @@ class VisualGridPaneBuilder(config: String, parent: Any) {
         // TODO manage row layout
         // TODO manage column layout
 
+
         for (layoutCell in layoutCells) {
             if (layoutCell.controlConstraints.size == 1) {
                 val controlConstraint = layoutCell.controlConstraints[0]

@@ -5,5 +5,4 @@ class ControlConstraint (
         val horizontalAlign: HorizontalAlign? = null,
         val verticalAlign: VerticalAlign? = null,
         val width: Width? = null) {
-
 }

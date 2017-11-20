@@ -6,6 +6,4 @@ class LayoutCell(
         val columnSpan: Int = 1,
         val rowSpan: Int = 1,
         val controlConstraints: Array<ControlConstraint> = emptyArray()) {
-
-
 }
