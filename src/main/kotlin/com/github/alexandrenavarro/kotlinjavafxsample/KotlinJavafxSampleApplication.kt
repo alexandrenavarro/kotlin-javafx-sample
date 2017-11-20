@@ -53,6 +53,7 @@ class KotlinJavafxSampleApplication : Application() {
 
     }
 
+
     val okButton = Button().apply {
         id = "okButton"
         text = "Ok"

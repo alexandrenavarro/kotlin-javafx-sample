@@ -110,5 +110,6 @@ class VisualGridPaneBuilder(config: String, parent: Any) {
         }
     }
 
+
     fun build(): GridPane = this.gridPane
 }
