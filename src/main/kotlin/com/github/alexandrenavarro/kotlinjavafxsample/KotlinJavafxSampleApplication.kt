@@ -1,12 +1,10 @@
 package com.github.alexandrenavarro.kotlinjavafxsample
 
+import com.github.alexandrenavarro.kotlinjavafxsample.kvisualgrid.javafx.VisualGridPaneBuilder
 import javafx.application.Application
-import javafx.scene.Node
 import javafx.stage.Stage
 import javafx.scene.Scene
-import javafx.scene.control.Button
-import javafx.scene.control.Label
-import javafx.scene.control.TextField
+import javafx.scene.control.*
 import javafx.scene.layout.GridPane
 import mu.KLogging
 
@@ -34,8 +32,25 @@ class KotlinJavafxSampleApplication : Application() {
         //id = "lastNameTextField"
     }
 
+    val middleNameLabel = Label().apply {
+        id = "firstNameLabel"
+        text = "Middle Name"
+    }
+
+    val middleNameTextField = TextField().apply {
+        //id = "lastNameTextField"
+    }
+
+    val textArea = TextArea().apply {
+
+    }
+
     val cancelButton = Button().apply {
         text = "Cancel"
+    }
+
+    val tableView = TableView<String>().apply {
+
     }
 
     val okButton = Button().apply {
@@ -46,8 +61,6 @@ class KotlinJavafxSampleApplication : Application() {
 
     override fun start(primaryStage: Stage?) {
 
-
-        logger.info { ">$firstNameLabel   <$firstNameTextField" }
 
         val gridPane = GridPane()
         val test = with(gridPane) {
@@ -60,14 +73,17 @@ class KotlinJavafxSampleApplication : Application() {
         }
 
 
-        val gridPane1 = VisualGridPaneBuilder(this,
+
+
+        val gridPane1 = VisualGridPaneBuilder(
                 """>$firstNameLabel   <$firstNameTextField
                          >$lastNameLabel    <$lastNameTextField
-                         >$okButton,$cancelButton                """
+                         >$okButton,$cancelButton                """,
+                this
         ).build()
 
 
-        val scene = Scene(gridPane, 800.0, 600.0)
+        val scene = Scene(gridPane1, 800.0, 600.0)
         primaryStage?.setScene(scene)
         primaryStage?.show()
     }
