@@ -4,6 +4,7 @@ import com.github.alexandrenavarro.kotlinjavafxsample.kvisualgrid.core.*
 import javafx.geometry.HPos
 import javafx.geometry.VPos
 import javafx.scene.Node
+import javafx.scene.control.ButtonBar
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
@@ -11,50 +12,74 @@ import mu.KLogging
 import kotlin.reflect.full.*
 
 
-// TODO parent or map node
-class VisualGridPaneBuilder(config: String, parent: Any) {
+// TODO view or map node
+class VisualGridPaneBuilder(private val visualGridDsl: String,
+                            private val view: Any = Any(),
+                            private val controlMap: MutableMap<String, Node> = HashMap<String, Node>()) {
 
     companion object : KLogging()
 
     private val gridPane: GridPane = GridPane()
 
+    constructor(config: String, view: Any) : this(config, view, emptyMap<String, Node>() as MutableMap<String, Node>) {}
+
+    constructor(config: String, componentMap: MutableMap<String, Node>) : this(config, Any(), componentMap) {}
+
     init {
-        var modifiedConfig = config
-        logger.info { "config before $modifiedConfig" }
-        val nameToControlMap = HashMap<String, Node>()
+        var transformedVisualGridDsl = visualGridDsl
+        logger.debug { "visualGridDsl before transformation $transformedVisualGridDsl" }
 
-        // TODO use 2 constructors
-
-        // Parent
-        parent.let {
-            parent.javaClass.kotlin.memberProperties.forEach {
-                if (it.returnType.isSubtypeOf(Node::class.createType())) {
-                    val value = it.get(parent)
-                    if (value is Node) {
-                        nameToControlMap[it.name] = value
-                    }
-                    modifiedConfig = modifiedConfig.replace(value.toString(), "$" + it.name)
+        // Retrieve properties from the view
+        view.javaClass.kotlin.memberProperties.forEach {
+            if (it.returnType.isSubtypeOf(Node::class.createType())) {
+                val value = it.get(view)
+                if (value is Node) {
+                    controlMap[it.name] = value
                 }
             }
         }
 
-        // Map object
-
-        logger.info {
-            "\n" +
-                    "$modifiedConfig"
+        // Replace the toString from component with the original String given
+        controlMap.entries.forEach {
+            transformedVisualGridDsl = transformedVisualGridDsl.replace(it.value.toString(), "$" + it.key)
         }
+
+        // Map object
+        logger.debug { "visualGridDsl after transformation $transformedVisualGridDsl" }
 
         //TODO parsing rows / columns
-        modifiedConfig.lines().forEach {
-            val list = it.trim().split(" +".toRegex())
+
+        transformedVisualGridDsl.lines().forEachIndexed {
+            rowIndex, row ->
+            row.trim().split(" +".toRegex()).forEachIndexed {
+                columnIndex, cell ->
+
+            }
         }
 
-        // TODO parse with grammar
+        var rowIndex = 0
+        var columnIndex = 0
+        val layoutCellList = ArrayList<LayoutCell>()
+        for (line in transformedVisualGridDsl.lines()) {
+            line.trim().split(" +".toRegex()).forEach {
+                // TODO Add
+                val columnSpan = 1
+                val rowSpan = 1
+                val controlName = "name-$columnSpan-$rowSpan"
+                val horizontalAlign: HorizontalAlign = HorizontalAlign.DEFAULT
+                val verticalAlign: VerticalAlign = VerticalAlign.DEFAULT
+                val size: Size = Size.DEFAULT
+                // TODO Manage RowSpan
+                // TODO Manage MultiControl
+                columnIndex += columnSpan
+                rowIndex += rowSpan
+                layoutCellList.add(LayoutCell(columnIndex, rowIndex, columnSpan, rowSpan, arrayOf(ControlConstraint(controlName, horizontalAlign, verticalAlign, size))))
+            }
+        }
 
         val layoutCells = arrayOf(
                 LayoutCell(0, 0, 1, 1, arrayOf(ControlConstraint("firstNameLabel"))),
-                LayoutCell(1, 0, 1, 1, arrayOf(ControlConstraint("firstNameTextField", width = Width.MAX))),
+                LayoutCell(1, 0, 1, 1, arrayOf(ControlConstraint("firstNameTextField"))),
                 LayoutCell(0, 1, 1, 1, arrayOf(ControlConstraint("lastNameLabel"))),
                 LayoutCell(1, 1, 1, 1, arrayOf(ControlConstraint("lastNameTextField"))),
                 LayoutCell(0, 2, 1, 1, arrayOf(ControlConstraint("middleNameLabel"))),
@@ -66,29 +91,33 @@ class VisualGridPaneBuilder(config: String, parent: Any) {
         // TODO manage row layout
         // TODO manage column layout
 
-
         for (layoutCell in layoutCells) {
             if (layoutCell.controlConstraints.size == 1) {
                 val controlConstraint = layoutCell.controlConstraints[0]
-                val node = nameToControlMap[controlConstraint.controlName]
+                val node = controlMap[controlConstraint.controlName]
                 if (node != null) {
                     setConstraintsOnNode(controlConstraint, node)
                     gridPane.add(node, layoutCell.columnIndex, layoutCell.rowIndex, layoutCell.columnSpan, layoutCell.rowSpan)
                 } else {
-                    logger.warn { "Impossible to find ${controlConstraint.controlName} in the map" }
+                    logger.error { "Impossible to find ${controlConstraint.controlName} in the map, it is abnormal, do you ?" }
                 }
             } else if (layoutCell.controlConstraints.size > 1) {
                 val flowPane = FlowPane()
+                val buttonBar = ButtonBar()
                 layoutCell.controlConstraints.forEach { controlConstraint ->
-                    val node = nameToControlMap[controlConstraint.controlName]
+                    val node = controlMap[controlConstraint.controlName]
                     if (node != null) {
                         setConstraintsOnNode(controlConstraint, node)
-                        flowPane.children.add(node)
+                        //flowPane.children.add(node)
+                        buttonBar.buttons.add(node)
                     } else {
-                        logger.warn { "Impossible to find ${controlConstraint.controlName} in the map" }
+                        logger.error { "Impossible to find ${controlConstraint.controlName} in the map" }
                     }
                 }
-                gridPane.add(flowPane, layoutCell.columnIndex, layoutCell.rowIndex, layoutCell.columnSpan, layoutCell.rowSpan)
+                //gridPane.add(flowPane, layoutCell.columnIndex, layoutCell.rowIndex, layoutCell.columnSpan, layoutCell.rowSpan)
+
+                gridPane.add(buttonBar, layoutCell.columnIndex, layoutCell.rowIndex, layoutCell.columnSpan, layoutCell.rowSpan)
+
             }
         }
     }
@@ -104,10 +133,10 @@ class VisualGridPaneBuilder(config: String, parent: Any) {
             VerticalAlign.CENTER -> GridPane.setValignment(node, VPos.CENTER)
             VerticalAlign.TOP -> GridPane.setValignment(node, VPos.TOP)
         }
-        when (controlConstraint.width) {
-            Width.MAX -> GridPane.setHgrow(node, Priority.ALWAYS)
-            Width.PREF -> GridPane.setHgrow(node, Priority.SOMETIMES)
-            Width.MIN -> GridPane.setHgrow(node, Priority.NEVER)
+        when (controlConstraint.size) {
+            Size.MAX -> GridPane.setHgrow(node, Priority.ALWAYS)
+            Size.PREF -> GridPane.setHgrow(node, Priority.SOMETIMES)
+            Size.MIN -> GridPane.setHgrow(node, Priority.NEVER)
         }
     }
 

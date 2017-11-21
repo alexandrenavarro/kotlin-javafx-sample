@@ -22,7 +22,7 @@ hspan +x
 vspan +1+y
 halign > | <
 valign ^ - _
-width > | <
+size > | <
 
 
-halign+ valign+ $control width+
+halign+ valign+ $control size+
