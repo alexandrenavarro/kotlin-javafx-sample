@@ -1,12 +1,17 @@
 package com.github.alexandrenavarro.kotlinjavafxsample
 
+import com.github.alexandrenavarro.kotlinjavafxsample.kvisualgrid.Person
 import com.github.alexandrenavarro.kotlinjavafxsample.kvisualgrid.javafx.VisualGridPaneBuilder
 import javafx.application.Application
+import javafx.geometry.Insets
 import javafx.stage.Stage
 import javafx.scene.Scene
 import javafx.scene.control.*
 import javafx.scene.layout.GridPane
 import mu.KLogging
+import javafx.scene.control.cell.PropertyValueFactory
+
+
 
 
 //import org.springframework.boot.runApplication
@@ -45,6 +50,14 @@ class KotlinJavafxSampleApplication : Application() {
 
     }
 
+    val table = TableView<Person>().apply {
+        val firstNameCol = TableColumn<Person, String>("First Name")
+        firstNameCol.cellValueFactory = PropertyValueFactory("firstName")
+        val lastNameCol = TableColumn<Person, String>("Last Name")
+        lastNameCol.cellValueFactory = PropertyValueFactory("lastName")
+        this.columns.setAll(firstNameCol, lastNameCol)
+    }
+
     val cancelButton = Button().apply {
         text = "Cancel"
     }
@@ -62,28 +75,18 @@ class KotlinJavafxSampleApplication : Application() {
     override fun start(primaryStage: Stage?) {
 
 
-        val gridPane = GridPane()
-        val test = with(gridPane) {
-            add(firstNameLabel, 0, 0)
-            add(firstNameTextField, 1, 0)
-            add(lastNameLabel, 0, 1)
-            add(lastNameTextField, 1, 1)
-            add(cancelButton, 0, 2)
-            add(okButton, 1, 2)
-        }
-
-
-
-
-        val gridPane1 = VisualGridPaneBuilder(
+        var gridPane = VisualGridPaneBuilder(
                 """>$firstNameLabel   <$firstNameTextField
-                         >$lastNameLabel    <$lastNameTextField
-                         >$okButton,$cancelButton                """,
+                              >$lastNameLabel    <$lastNameTextField
+                              >$okButton,$cancelButton                """,
                 this
         ).build()
+        gridPane.padding = Insets(4.0, 4.0, 4.0, 4.0)
+        for (child in gridPane.children) {
+            GridPane.setMargin(child, Insets(4.0, 4.0, 4.0, 4.0))
+        }
 
-
-        val scene = Scene(gridPane1, 800.0, 600.0)
+        val scene = Scene(gridPane, 800.0, 600.0)
         primaryStage?.setScene(scene)
         primaryStage?.show()
     }

@@ -1,5 +1,5 @@
 package com.github.alexandrenavarro.kotlinjavafxsample.kvisualgrid.core
 
-enum class Size(val symbol : String) {
+enum class HorizontalSize(val symbol : String) {
     MIN("<"), PREF("|"), MAX(">"), DEFAULT("")
 }
