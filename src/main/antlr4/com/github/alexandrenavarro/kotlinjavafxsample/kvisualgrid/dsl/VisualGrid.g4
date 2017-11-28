@@ -1,16 +1,20 @@
 grammar VisualGrid;
 
-columnConstraints : columnConstraint * (' ' (' ')* columnConstraint)*;
+columnConstraints : columnConstraint (spaces columnConstraint)*;
 
-rowConstraints : cellConstraint * (' ' (' ')* cellConstraint)* (' ' (' ')* rowConstraint)?;
+rowConstraints : cellConstraint (spaces cellConstraint)* (spaces rowConstraint)?;
 
 rowConstraint : '[' verticalAlign? (' ' sizes)? (' ' verticalSize)? ']';
 
 columnConstraint : '[' horizontalAlign? (' ' sizes)? (' ' horizontalSize)? ']';
 
-cellConstraint : (horizontalAlign verticalAlign)? verticalAlign? horizontalAlign? control (horizontalSize verticalSize)? verticalSize? horizontalSize? ('+' rowSpan)? ('+' rowSpan '+' columSpan)? ('=' groupButtonId)? (',' control (horizontalSize verticalSize)? verticalSize? horizontalSize? ('=' groupButtonId)? )*;
+cellConstraint : align? control size? ('+' rowSpan)? ('+' rowSpan '+' columSpan)? ('=' groupButtonId)? (',' control size? ('=' groupButtonId)? )*;
 
 control : '$' identifier;
+
+size : (verticalSize horizontalSize) | (horizontalSize verticalSize) | verticalSize | horizontalSize;
+
+align : (verticalAlign horizontalAlign) | (horizontalAlign verticalAlign) | verticalAlign | horizontalAlign;
 
 verticalAlign : ('_' | '-' | '^');
 
@@ -28,7 +32,9 @@ groupButtonId : DEC_DIGIT | ;
 
 identifier : (LETTER | '_') (LETTER | '_' | DEC_DIGIT)*;
 
-sizes : (prefSize | minSize '::' | minSize ':' prefSize ':' | minSize ':' prefSize ':' maxSize | ':' prefSize ':' maxSize | '::' maxSize) ;
+sizes : (prefSize | minSize '::' | minSize ':' prefSize ':' | minSize ':' prefSize ':' maxSize | ':' prefSize ':' maxSize | '::' maxSize | ':' prefSize ':' ) ;
+
+spaces : ' '+;
 
 minSize : DEC_DIGIT;
 
