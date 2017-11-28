@@ -1,6 +1,9 @@
 package com.github.alexandrenavarro.kotlinjavafxsample.kvisualgrid.javafx
 
 import com.github.alexandrenavarro.kotlinjavafxsample.kvisualgrid.core.*
+import com.github.alexandrenavarro.kotlinjavafxsample.kvisualgrid.dsl.VisualGridLexer
+import com.github.alexandrenavarro.kotlinjavafxsample.kvisualgrid.dsl.VisualGridListener
+import com.github.alexandrenavarro.kotlinjavafxsample.kvisualgrid.dsl.VisualGridParser
 import javafx.geometry.HPos
 import javafx.geometry.Insets
 import javafx.geometry.VPos
@@ -8,6 +11,8 @@ import javafx.scene.Node
 import javafx.scene.control.ButtonBar
 import javafx.scene.layout.*
 import mu.KLogging
+import org.antlr.v4.runtime.ANTLRInputStream
+import org.antlr.v4.runtime.CommonTokenStream
 import kotlin.reflect.full.*
 
 
@@ -73,6 +78,10 @@ class VisualGridPaneBuilder(private val visualGridDsl: String,
             rowIndex, row ->
             row.trim().split(" +".toRegex()).forEachIndexed {
                 columnIndex, cell ->
+
+                var visualGridLexer = VisualGridLexer(ANTLRInputStream(cell))
+                var visualGridParser = VisualGridParser(CommonTokenStream(visualGridLexer))
+                var rowConstraints = visualGridParser.rowConstraints()
 
             }
         }
@@ -155,3 +164,5 @@ class VisualGridPaneBuilder(private val visualGridDsl: String,
         return gridPane
     }
 }
+
+

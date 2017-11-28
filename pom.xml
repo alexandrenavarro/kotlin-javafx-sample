@@ -32,6 +32,10 @@
 		<javafxMavenPluginVersion>8.8.3</javafxMavenPluginVersion>
 		<assertjJavafxVersion>0.3.0</assertjJavafxVersion>
 		<lombokVersion>1.16.18</lombokVersion>
+		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+		<antlr4-maven-plugin.version>4.7</antlr4-maven-plugin.version>
+		<kotlin-logging.version>1.4.6</kotlin-logging.version>
+		<antlr4-runtime.version>4.7</antlr4-runtime.version>
 	</properties>
 
 	<dependencyManagement>
@@ -85,18 +89,14 @@
 		<dependency>
 			<groupId>io.github.microutils</groupId>
 			<artifactId>kotlin-logging</artifactId>
-			<version>1.4.6</version>
+			<version>${kotlin-logging.version}</version>
 		</dependency>
 
-		<!--<dependency>-->
-			<!--<groupButtonId>org.springframework.cloud</groupButtonId>-->
-			<!--<artifactId>spring-cloud-starter-feign</artifactId>-->
-		<!--</dependency>-->
-
-		<!--<dependency>-->
-			<!--<groupButtonId>org.springframework.cloud</groupButtonId>-->
-			<!--<artifactId>spring-cloud-starter-ribbon</artifactId>-->
-		<!--</dependency>-->
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr4-runtime</artifactId>
+			<version>${antlr4-runtime.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.controlsfx</groupId>
@@ -113,15 +113,25 @@
 	</dependencies>
 
 	<build>
-		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+		<!--sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory-->
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>kotlin-maven-plugin</artifactId>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<version>${kotlin.version}</version>
 				<configuration>
-					<jvmTarget>1.8</jvmTarget>
+					<jvmTarget>${java.version}</jvmTarget>
 				</configuration>
 				<executions>
 					<execution>
@@ -130,6 +140,11 @@
 						<goals>
 							<goal>compile</goal>
 						</goals>
+						<configuration>
+							<sourceDirs>
+								<source>${project.basedir}/src/main/kotlin</source>
+							</sourceDirs>
+						</configuration>
 					</execution>
 					<execution>
 						<id>test-compile</id>
@@ -137,6 +152,11 @@
 						<goals>
 							<goal>test-compile</goal>
 						</goals>
+						<configuration>
+							<sourceDirs>
+								<source>${project.basedir}/src/test/kotlin</source>
+							</sourceDirs>
+						</configuration>
 					</execution>
 				</executions>
 				<dependencies>
@@ -150,7 +170,7 @@
 			<plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>4.7</version>
+				<version>${antlr4-maven-plugin.version}</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
